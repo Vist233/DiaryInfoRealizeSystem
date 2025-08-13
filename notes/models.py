@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 import re
+from .utils import render_markdown_safe
 
 
 class Note(models.Model):
@@ -23,21 +24,22 @@ class Note(models.Model):
         return list({m.group(1).strip(): None for m in self.WIKILINK_RE.finditer(self.content)}.keys())
 
     def render_content(self):
-        # Replace [[Title]] with links to existing notes owned by the same user; leave text if not found
+        """Render content to HTML with safe markdown and wikilinks.
+
+        Strategy: pre-process wikilinks [[Title]] into <a> tags (or plain text
+        if not found), then run through safe markdown renderer allowing anchors.
+        """
+        text = self.content or ""
+
         def repl(match):
             title = match.group(1).strip()
-            try:
-                target = Note.objects.filter(owner=self.owner, title=title).first()
-                if target:
-                    return f'<a href="/{target.pk}/">{title}</a>'
-            except Exception:
-                pass
+            target = Note.objects.filter(owner=self.owner, title=title).first()
+            if target:
+                return f'<a href="/{target.pk}/" data-wikilink="{title}">{title}</a>'
             return title
 
-        html = self.WIKILINK_RE.sub(repl, self.content or "")
-        # Basic escaping is omitted for brevity; ensure content comes from trusted source in MVP
-        html = html.replace("\n", "<br>")
-        return html
+        preprocessed = self.WIKILINK_RE.sub(repl, text)
+        return render_markdown_safe(preprocessed)
 
 
 class NoteLink(models.Model):

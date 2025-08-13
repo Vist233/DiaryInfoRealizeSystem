@@ -1,20 +1,44 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-  <p><a href="/create/">Create Note</a></p>
+  <div class="toolbar">
+    <h2 class="toolbar-title">My Notes</h2>
+    <div class="toolbar-actions">
+      <form method="get" action="/" class="search-form">
+        <input type="text" name="q" placeholder="Search..." value="{{ request.GET.q }}" />
+      </form>
+      <a class="btn btn-primary" href="/create/">Create Note</a>
+    </div>
+  </div>
+  <div class="quick-create card">
+    <form id="qc-form">
+      <label for="qc-title">Quick Create</label>
+      <div style="display:flex; gap:.5rem; align-items:center;">
+        <input id="qc-title" type="text" placeholder="Enter title..." />
+        <button class="btn btn-ghost" type="submit">Add</button>
+      </div>
+      <small class="muted">Creates a blank note instantly. Edit details later.</small>
+    </form>
+  </div>
   {% if notes %}
-    <table>
+    <table class="table">
       <thead><tr><th>Title</th><th>Updated</th></tr></thead>
       <tbody>
       {% for note in notes %}
         <tr>
-          <td><a href="/{{ note.pk }}/">{{ note.title }}</a></td>
-          <td>{{ note.updated_at }}</td>
+          <td><a class="link" href="/{{ note.pk }}/">{{ note.title }}</a></td>
+          <td class="muted">{{ note.updated_at|timesince }} ago</td>
         </tr>
       {% endfor %}
       </tbody>
     </table>
   {% else %}
-    <p>No notes yet. Create your first note.</p>
+    <div class="card empty">
+      <h3 style="margin-top:0;">No notes yet</h3>
+      <p class="muted">Start your first note to build your knowledge base.</p>
+      <a class="btn btn-primary" href="/create/">Create Note</a>
+    </div>
   {% endif %}
-  <p style="margin-top:1rem; color:#666;">Tip: Use <code>[[Title]]</code> in content to link notes. Missing links can be created via <a href="/create/?title=New%20Note">/create/?title=...</a>.</p>
+  <p class="muted" style="margin-top:1rem;">Tip: Use <code>[[Title]]</code> in content to link notes. Missing links can be created via <a class="link" href="/create/?title=New%20Note">/create/?title=...</a>.</p>
+  <script src="{% static 'notes/note_list.js' %}"></script>
 {% endblock %}

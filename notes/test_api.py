@@ -66,3 +66,16 @@ class NotesApiTests(TestCase):
         self.assertEqual(resp.status_code, 204)
         self.assertFalse(Note.objects.filter(pk=alpha_id).exists())
 
+    def test_preview_endpoint(self):
+        self.client.login(username="apiuser", password="pw")
+        # Create a referenced note
+        note = Note.objects.create(owner=self.user, title="Ref", content="content")
+        resp = self.client.post(
+            "/api/notes/preview/",
+            data={"text": "See [[Ref]] and **bold**"},
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, 200)
+        html = resp.json().get("html", "")
+        self.assertIn(f"/{note.pk}/", html)
+        self.assertIn("<strong>", html)

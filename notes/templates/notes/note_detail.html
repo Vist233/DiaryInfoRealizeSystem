@@ -1,29 +1,40 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-  <h2>{{ object.title }}</h2>
-  <div>{{ rendered|safe }}</div>
-  <p>
-    <a href="/{{ object.pk }}/edit/">Edit</a>
-    <a href="/{{ object.pk }}/delete/" style="color:#b00">Delete</a>
-  </p>
-  <hr>
-  <h3>Links</h3>
+  <script>window.EXISTING_TITLES = {{ existing_titles|safe }};</script>
+  <script>window.NOTE_ID = {{ object.pk }};</script>
+  <div class="toolbar">
+    <a class="link" href="/">← Back</a>
+    <div class="toolbar-actions">
+      <a class="btn btn-danger" href="/{{ object.pk }}/delete/">Delete</a>
+    </div>
+  </div>
+  <h2 id="note-title" class="editable" title="Click to edit title">{{ object.title }}</h2>
+  <div id="note-content" class="card content editable" title="Click to edit content">{{ rendered|safe }}</div>
+  <pre id="note-content-raw" style="display:none;">{{ object.content }}</pre>
+  <div id="inline-editor" style="display:none;" class="card" aria-live="polite"></div>
+  <h3 style="margin-top:1.25rem;">Links</h3>
   <div>
-    <strong>Outbound:</strong>
+    <strong class="muted">Outbound:</strong>
     {% if outbound_links %}
       {% for link in outbound_links %}
-        <a href="/{{ link.to_note.pk }}/">{{ link.to_note.title }}</a>{% if not forloop.last %}, {% endif %}
+        <a class="pill link-pill" href="/{{ link.to_note.pk }}/">{{ link.to_note.title }}</a>
       {% empty %} None
       {% endfor %}
-    {% else %} None {% endif %}
+    {% else %} <span class="muted">None</span> {% endif %}
   </div>
   <div>
-    <strong>Backlinks:</strong>
+    <strong class="muted">Backlinks:</strong>
     {% if inbound_links %}
       {% for link in inbound_links %}
-        <a href="/{{ link.from_note.pk }}/">{{ link.from_note.title }}</a>{% if not forloop.last %}, {% endif %}
+        <a class="pill link-pill" href="/{{ link.from_note.pk }}/">{{ link.from_note.title }}</a>
       {% empty %} None
       {% endfor %}
-    {% else %} None {% endif %}
+    {% else %} <span class="muted">None</span> {% endif %}
   </div>
+  <div style="margin-top:.5rem;">
+    <span class="muted">Missing links:</span>
+    <span id="missing-links-detail"></span>
+  </div>
+  <script src="{% static 'notes/note_detail.js' %}"></script>
 {% endblock %}

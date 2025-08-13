@@ -37,20 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',  # Add this for Django Channels
     'users',
     'notes',
-    'capture',
-    'ai_integration',
+    # 'capture',  # removed
+    # 'ai_integration',  # removed
 ]
 
-# Add this for Django Channels
+# Default ASGI application (HTTP only)
 ASGI_APPLICATION = 'DiaryInfoRealizeSystem.asgi.application'
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
-    }
-}
 
 AUTH_USER_MODEL = 'users.User'
 LOGIN_URL = '/accounts/login/'

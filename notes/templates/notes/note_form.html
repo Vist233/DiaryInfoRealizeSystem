@@ -1,16 +1,32 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-  <form method="post">
-    {% csrf_token %}
-    <p>
-      <label for="id_title">Title</label><br />
-      {{ form.title }}
-    </p>
-    <p>
-      <label for="id_content">Content (Markdown)</label><br />
-      {{ form.content }}
-    </p>
-    <button type="submit">Save</button>
-  </form>
+  <script>window.EXISTING_TITLES = {{ existing_titles|safe }};</script>
+  <div class="toolbar">
+    <h2 class="toolbar-title">New Note</h2>
+  </div>
+  <div class="grid">
+    <div>
+      <form method="post" class="card form">
+        {% csrf_token %}
+        <p>
+          <label for="id_title">Title</label><br />
+          <small class="muted">A concise, clear title works best.</small><br />
+          {{ form.title }}
+        </p>
+        <p>
+          <label for="id_content">Content</label><br />
+          <small class="muted">Supports Markdown and [[wikilinks]].</small><br />
+          {{ form.content }}
+        </p>
+        <button class="btn btn-primary" type="submit">Save</button>
+      </form>
+      <p class="muted" style="margin-top:.5rem;">Missing links: <span id="missing-links"></span></p>
+    </div>
+    <div class="card">
+      <div class="muted" style="margin-bottom:.5rem;">Live Preview</div>
+      <div id="preview" class="preview content"></div>
+    </div>
+  </div>
+  <script src="{% static 'notes/note_form.js' %}"></script>
 {% endblock %}
-
