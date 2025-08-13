@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DiaryInfoRealizeSystem</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 2rem; }
+      header { display:flex; gap:1rem; align-items:center; margin-bottom:1rem; }
+      nav a { margin-right: .75rem; }
+      .container { max-width: 900px; }
+      textarea { width:100%; min-height: 240px; }
+      table { width:100%; border-collapse: collapse; }
+      th, td { padding: .5rem; border-bottom: 1px solid #ddd; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1 style="margin:0;">Notes</h1>
+        <nav>
+          <a href="/">Home</a>
+          <a href="/create/">New</a>
+          <a href="/admin/">Admin</a>
+          {% if request.user.is_authenticated %}
+            <span>Hi, {{ request.user.username }}</span>
+            <a href="/accounts/logout/">Logout</a>
+          {% else %}
+            <a href="/accounts/login/">Login</a>
+          {% endif %}
+        </nav>
+      </header>
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+  </html>

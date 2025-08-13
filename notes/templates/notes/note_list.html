@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+  <p><a href="/create/">Create Note</a></p>
+  {% if notes %}
+    <table>
+      <thead><tr><th>Title</th><th>Updated</th></tr></thead>
+      <tbody>
+      {% for note in notes %}
+        <tr>
+          <td><a href="/{{ note.pk }}/">{{ note.title }}</a></td>
+          <td>{{ note.updated_at }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No notes yet. Create your first note.</p>
+  {% endif %}
+{% endblock %}
+

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>{{ object.title }}</h2>
+  <pre style="white-space: pre-wrap;">{{ object.content }}</pre>
+  <p>
+    <a href="/{{ object.pk }}/edit/">Edit</a>
+    <a href="/{{ object.pk }}/delete/" style="color:#b00">Delete</a>
+  </p>
+{% endblock %}
+
