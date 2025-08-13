@@ -114,7 +114,7 @@ class ApiView(View):
 @method_decorator(csrf_exempt, name="dispatch")
 class NotesListCreate(ApiView):
     def get(self, request: HttpRequest):
-        qs = Note.objects.filter(owner=request.user)
+        qs = Note.objects.filter(owner=request.user).order_by('-updated_at')
         q = request.GET.get("q")
         if q:
             qs = qs.filter(title__icontains=q)
@@ -192,16 +192,26 @@ class NotesDetail(ApiView):
 class NotesPreview(ApiView):
     def post(self, request: HttpRequest):
         payload = _parse_json(request)
-        text = payload.get('text') or ''
-        # Preprocess wikilinks relative to current user
+        text = (payload.get('text') or '')
+        # Protect server from excessively large previews
+        if len(text) > 200_000:
+            return JsonResponse({'html': '<p class="muted">Preview too large.</p>'}, status=200)
+
+        # Preprocess wikilinks relative to current user (bulk map)
         from .models import Note
+        from .utils import extract_wikilinks, render_markdown_safe
+
+        titles = extract_wikilinks(text)
+        title_map = {}
+        if titles:
+            title_map = {n.title: n for n in Note.objects.filter(owner=request.user, title__in=titles)}
+
         def repl(m):
             title = (m.group(1) or '').strip()
-            target = Note.objects.filter(owner=request.user, title=title).first()
+            target = title_map.get(title)
             if target:
                 return f'<a href="/{target.pk}/" data-wikilink="{title}">{title}</a>'
             return title
         pre = Note.WIKILINK_RE.sub(repl, text)
-        from .utils import render_markdown_safe
         html = render_markdown_safe(pre)
         return JsonResponse({'html': html})

@@ -20,9 +20,9 @@
           <a class="nav-link" href="/admin/">Admin</a>
           {% if request.user.is_authenticated %}
             <span class="nav-text">Hi, {{ request.user.username }}</span>
-            <a class="btn btn-ghost" href="/accounts/logout/">Logout</a>
+            <a class="btn btn-ghost" href="{% url 'users:logout' %}">Logout</a>
           {% else %}
-            <a class="btn btn-primary" href="/accounts/login/">Login</a>
+            <a class="btn btn-primary" href="{% url 'users:login' %}">Login</a>
           {% endif %}
         </nav>
       </header>

@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 import re
-from .utils import render_markdown_safe
+from .utils import render_markdown_safe, extract_wikilinks
 
 
 class Note(models.Model):
@@ -30,10 +30,14 @@ class Note(models.Model):
         if not found), then run through safe markdown renderer allowing anchors.
         """
         text = self.content or ""
+        titles = extract_wikilinks(text)
+        title_map = {}
+        if titles:
+            title_map = {n.title: n for n in Note.objects.filter(owner=self.owner, title__in=titles)}
 
         def repl(match):
             title = match.group(1).strip()
-            target = Note.objects.filter(owner=self.owner, title=title).first()
+            target = title_map.get(title)
             if target:
                 return f'<a href="/{target.pk}/" data-wikilink="{title}">{title}</a>'
             return title
