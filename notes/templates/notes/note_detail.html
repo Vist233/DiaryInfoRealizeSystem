@@ -1,10 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
   <h2>{{ object.title }}</h2>
-  <pre style="white-space: pre-wrap;">{{ object.content }}</pre>
+  <div>{{ rendered|safe }}</div>
   <p>
     <a href="/{{ object.pk }}/edit/">Edit</a>
     <a href="/{{ object.pk }}/delete/" style="color:#b00">Delete</a>
   </p>
+  <hr>
+  <h3>Links</h3>
+  <div>
+    <strong>Outbound:</strong>
+    {% if outbound_links %}
+      {% for link in outbound_links %}
+        <a href="/{{ link.to_note.pk }}/">{{ link.to_note.title }}</a>{% if not forloop.last %}, {% endif %}
+      {% empty %} None
+      {% endfor %}
+    {% else %} None {% endif %}
+  </div>
+  <div>
+    <strong>Backlinks:</strong>
+    {% if inbound_links %}
+      {% for link in inbound_links %}
+        <a href="/{{ link.from_note.pk }}/">{{ link.from_note.title }}</a>{% if not forloop.last %}, {% endif %}
+      {% empty %} None
+      {% endfor %}
+    {% else %} None {% endif %}
+  </div>
 {% endblock %}
-

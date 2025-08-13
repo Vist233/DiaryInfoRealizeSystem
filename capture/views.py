@@ -1,6 +1,5 @@
 import json
 
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -11,8 +10,9 @@ from notes.models import Note
 
 @method_decorator(csrf_exempt, name="dispatch")
 class CaptureNoteView(View):
-    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return JsonResponse({"detail": "Authentication required"}, status=401)
         try:
             if request.content_type == "application/json":
                 payload = json.loads(request.body.decode("utf-8"))
