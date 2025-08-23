@@ -75,13 +75,18 @@
     function htmlToMd(html) {
       let s = html;
       s = s.replace(/<a[^>]*data-wikilink=\"([^\"]+)\"[^>]*>[^<]*<\/a>/gi, (_, t) => `[[${t}]]`);
+      // generic links -> markdown [text](url)
+      s = s.replace(/<a[^>]*href=\"([^\"]+)\"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, t) => `[${stripTags(t)}](${href})`);
+      // lists
+      s = s.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (_, t) => `- ${stripTags(t)}\n`);
+      s = s.replace(/<\/?ul[^>]*>/gi, '');
+      s = s.replace(/<\/?ol[^>]*>/gi, '');
       s = s.replace(/<h1[^>]*>([\s\S]*?)<\/h1>/gi, (_, t) => `# ${stripTags(t)}`);
       s = s.replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, (_, t) => `## ${stripTags(t)}`);
       s = s.replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, (_, t) => `### ${stripTags(t)}`);
       s = s.replace(/<strong[^>]*>([\s\S]*?)<\/strong>/gi, (_, t) => `**${stripTags(t)}**`);
       s = s.replace(/<em[^>]*>([\s\S]*?)<\/em>/gi, (_, t) => `*${stripTags(t)}*`);
       s = s.replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, (_, t) => `\`${stripTags(t)}\``);
-      s = s.replace(/<a[^>]*href=\"([^\"]+)\"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, t) => `${stripTags(t)}`);
       s = s.replace(/<br\s*\/?>/gi, '\n');
       s = s.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, t) => `${stripTags(t)}\n\n`);
       s = stripTags(s);

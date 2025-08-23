@@ -15,4 +15,6 @@ urlpatterns = [
     path("api/notes/", views.NotesListCreate.as_view(), name="api_notes_list_create"),
     path("api/notes/<int:pk>/", views.NotesDetail.as_view(), name="api_notes_detail"),
     path("api/notes/preview/", views.NotesPreview.as_view(), name="api_notes_preview"),
+    path("api/notes/import_url/", views.NotesImportUrl.as_view(), name="api_notes_import_url"),
+    path("api/notes/export/", views.NotesExport.as_view(), name="api_notes_export"),
 ]
